@@ -13,12 +13,12 @@
 
 ```sh
 go get github.com/tgrziminiar/gcache
+```
 
 
 # Example Usage of `gcache` Package
 
 This example demonstrates how to use the `gcache` package to cache different types of data, including simple values and complex structs.
-```
 
 ```go
 package main
