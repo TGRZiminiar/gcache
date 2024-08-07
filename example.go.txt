@@ -1,0 +1,62 @@
+package main
+
+import (
+	"fmt"
+	"tgrziminiar/gcache/cache"
+	"time"
+)
+
+type (
+	User struct {
+		ID   int
+		Name string
+	}
+
+	Product struct {
+		ID    int
+		Title string
+		Price float64
+	}
+
+	Order struct {
+		OrderID  int
+		UserID   int
+		Products []int
+	}
+)
+
+func main() {
+	// 	set defaultExpiration and clearIntervalCache
+	c := cache.NewCache(time.Second*2, time.Second*2)
+	key := "foo"
+	data := "bar"
+	// set cache that exist only 1 second
+	c.Set(key, data, time.Second*1)
+
+	// get the cache using the key
+	val, found := c.Get(key)
+	_ = val
+	_ = found
+
+	// store many datas in the same key
+	key2 := "manydata"
+	user := User{ID: 1, Name: "Alice"}
+	product := Product{ID: 2, Title: "Smartphone", Price: 699.99}
+	order := Order{OrderID: 1, UserID: 1, Products: []int{1, 2}}
+	c.Set(key2, []interface{}{user, product, order}, 6*time.Hour)
+
+	if cachedData, found := c.Get(key2); found {
+		if data, ok := cachedData.([]interface{}); ok && len(data) == 3 {
+			if userData, ok := data[0].(User); ok {
+				if productData, ok := data[1].(Product); ok {
+					if orderData, ok := data[2].(Order); ok {
+						fmt.Println("User Data:", userData)
+						fmt.Println("Product Data:", productData)
+						fmt.Println("Order Data:", orderData)
+					}
+				}
+			}
+		}
+	}
+
+}
